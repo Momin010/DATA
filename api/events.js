@@ -17,20 +17,20 @@ module.exports = async function handler(req, res) {
     const data2 = await response2.json();
 
     // Limit to first 10 from each
-    const events1 = Array.isArray(data1) ? data1.slice(0, 10) : [];
-    const events2 = Array.isArray(data2) ? data2.slice(0, 10) : [];
+    const events1 = Array.isArray(data1.pages) ? data1.pages.slice(0, 10) : [];
+    const events2 = Array.isArray(data2.pages) ? data2.pages.slice(0, 10) : [];
 
     // Combine
     const allEvents = [...events1, ...events2];
 
     // Clean and structure the data
     const cleanedEvents = allEvents.map(event => ({
-      title: event.title || event.name || 'No Title',
-      description: event.description || event.short_description || 'No Description',
-      startDate: event.start_date || event.startDate || event.event_dates?.start || 'Unknown',
-      endDate: event.end_date || event.endDate || event.event_dates?.end || 'Unknown',
-      location: event.location || event.venue || 'Unknown',
-      url: event.url || event.link || ''
+      title: event.name || 'No Title',
+      description: event.descriptionShort || event.descriptionLong || 'No Description',
+      startDate: event.defaultStartDate || event.event?.dates?.[0]?.start || 'Unknown',
+      endDate: event.defaultEndDate || event.event?.dates?.[0]?.end || 'Unknown',
+      location: event.locations?.[0]?.address || 'Unknown',
+      url: event.originalUrl || event.event?.urlPurchaseTicket || ''
     }));
 
     res.status(200).json(cleanedEvents);
