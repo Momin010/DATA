@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -7,13 +5,20 @@ module.exports = async function handler(req, res) {
 
   try {
     const [response1, response2] = await Promise.all([
-      axios.get('https://tapahtumat.tampere.fi/api/collection/634844c32f41a024ee51a234/content?country=FI&hashtagsForContentSelection=&lang=fi&mode=event&sort=startDate&strictLang=true'),
-      axios.get('https://tapahtumat.tampere.fi/api/collection/634844c32f41a024ee51a234/content?areas=&country=FI&hashtagsForContentSelection=&lang=fi&mode=event&sort=countViews&strictLang=true')
+      fetch('https://tapahtumat.tampere.fi/api/collection/634844c32f41a024ee51a234/content?country=FI&hashtagsForContentSelection=&lang=fi&mode=event&sort=startDate&strictLang=true'),
+      fetch('https://tapahtumat.tampere.fi/api/collection/634844c32f41a024ee51a234/content?areas=&country=FI&hashtagsForContentSelection=&lang=fi&mode=event&sort=countViews&strictLang=true')
     ]);
 
+    if (!response1.ok || !response2.ok) {
+      throw new Error('Failed to fetch from API');
+    }
+
+    const data1 = await response1.json();
+    const data2 = await response2.json();
+
     // Limit to first 10 from each
-    const events1 = response1.data.slice(0, 10);
-    const events2 = response2.data.slice(0, 10);
+    const events1 = Array.isArray(data1) ? data1.slice(0, 10) : [];
+    const events2 = Array.isArray(data2) ? data2.slice(0, 10) : [];
 
     // Combine
     const allEvents = [...events1, ...events2];
