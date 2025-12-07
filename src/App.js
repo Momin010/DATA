@@ -9,7 +9,7 @@ function App() {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/events');
+      const response = await fetch(`/api/events?limit=${limit}`);
       const data = await response.json();
       setEvents(data);
     } catch (error) {
@@ -35,7 +35,7 @@ function App() {
           />
         </div>
         <div className="events-list">
-          {events.slice(0, limit).map((event, index) => (
+          {events.map((event, index) => (
             <div key={index} className="event">
               <h3>{event.title}</h3>
               <p>{event.description}</p>

@@ -3,6 +3,8 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const limit = parseInt(req.query.limit) || 20;
+
   try {
     const [response1, response2] = await Promise.all([
       fetch('https://tapahtumat.tampere.fi/api/collection/634844c32f41a024ee51a234/content?country=FI&hashtagsForContentSelection=&lang=fi&mode=event&sort=startDate&strictLang=true'),
@@ -23,8 +25,11 @@ module.exports = async function handler(req, res) {
     // Combine
     const allEvents = [...events1, ...events2];
 
+    // Apply limit
+    const limitedEvents = allEvents.slice(0, limit);
+
     // Clean and structure the data
-    const cleanedEvents = allEvents.map(event => ({
+    const cleanedEvents = limitedEvents.map(event => ({
       title: event.name || 'No Title',
       description: event.descriptionShort || event.descriptionLong || 'No Description',
       startDate: event.defaultStartDate || event.event?.dates?.[0]?.start || 'Unknown',
