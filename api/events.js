@@ -18,9 +18,9 @@ module.exports = async function handler(req, res) {
     const data1 = await response1.json();
     const data2 = await response2.json();
 
-    // Limit to first 10 from each
-    const events1 = Array.isArray(data1.pages) ? data1.pages.slice(0, 10) : [];
-    const events2 = Array.isArray(data2.pages) ? data2.pages.slice(0, 10) : [];
+    // Get all available from each
+    const events1 = Array.isArray(data1.pages) ? data1.pages : [];
+    const events2 = Array.isArray(data2.pages) ? data2.pages : [];
 
     // Combine
     const allEvents = [...events1, ...events2];
