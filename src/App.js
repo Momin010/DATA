@@ -4,6 +4,7 @@ import './App.css';
 function App() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [limit, setLimit] = useState(10);
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -21,11 +22,20 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Events App</h1>
-        <button onClick={fetchEvents} disabled={loading}>
-          {loading ? 'Fetching...' : 'FETCH EVENTS'}
-        </button>
+        <div className="controls">
+          <button onClick={fetchEvents} disabled={loading}>
+            {loading ? 'Fetching...' : 'FETCH EVENTS'}
+          </button>
+          <input
+            type="number"
+            value={limit}
+            onChange={(e) => setLimit(Math.max(1, parseInt(e.target.value) || 1))}
+            min="1"
+            placeholder="Number of events"
+          />
+        </div>
         <div className="events-list">
-          {events.map((event, index) => (
+          {events.slice(0, limit).map((event, index) => (
             <div key={index} className="event">
               <h3>{event.title}</h3>
               <p>{event.description}</p>
